@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 let cartItems = [];
 app.get('/',(req,res)=>{
-    res.redirect('/home');
+    res.status(201).redirect('/home');
 })
 app.post('/add-to-cart', (req, res) => {
     const { name, price ,image } = req.body;
@@ -48,10 +48,10 @@ app.post('/add-to-cart', (req, res) => {
   });
 
 app.get('/login',(req,res)=>{
-    res.render('login');
+    res.status(201).render('login');
 })
 app.get('/signup',(req,res)=>{
-    res.render('sign-up');
+    res.status(201).render('sign-up');
 })
 
 app.get('/main',(req,res)=>{
