@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Service</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="title">
+        <h1>Traditional American Cuisine</h1>
+        </div>
+        <div class="nav_right">
+            <a href="/order-history?token=<%=token%>">Order History</a>
+            <a href = "/profile?token=<%=token%>">Profile</a>
+            <a href="/logout">Sign Out</a>
+        </div>
+    </header>
+    <div>
+        <img src="/background.jpg" class="main_back">
+    </div>
+    <div class="body">
+        <main>
+            <h2 class="menu-page">Menu Page</h2>
+            <ul>
+                <% foodItems.forEach(item => { %>
+                <div class="items">
+                    <img  class="food-image" src="<%=item.image%>" />
+                    <span class="food-items"><h3><%= item.name %></h3><h3><%= item.price %></h3></span>
+                    <form action="/add-to-cart?token=<%=token%>" method="POST">
+                        <input type="hidden" name="image" value ="<%=item.image%>">
+                        <input type="hidden" name="name" value="<%= item.name %>">
+                        <input type="hidden" name="price" value="<%= item.price %>">
+                        <button type="submit" class="add">Add to Cart</button>
+                    </form>
+                </div>
+                <% }); %>
+            </ul>
+        </main>
+        <section id="cart-summary">
+            <h3>Cart Summary</h3>
+            <ul>
+                <% let total = 0%>
+                <% cartItems.forEach(item => { %>
+                <li>
+                    <span><%= item.name %> - Quantity: <%= item.quantity %></span>
+                    <span class="'price">Total Price: $<%= item.totalPrice.toFixed(2) %></span>
+                    <% total+= item.totalPrice%>
+                </li>
+                <% }); %>
+            </ul>
+            <h2>Total Amount: $<%=total.toFixed(2)%></h2>
+            <form action="/summary?token=<%=token%>" method="post">
+                <input type="hidden" name="cartItems" value="<%= JSON.stringify(cartItems) %>">
+                <button type="submit" class="pay-submit">Pay</button>
+            </form>
+        </section>
+    </div>
+    <footer>
+        <p>&copy; 2023 Traditional American Cuisine. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,269 @@
+*{
+    margin: 0px 0px;
+}
+.food-image {
+    width: 200px;
+    height: 200px;
+}
+
+.items {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.body {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    background-image: url('images3.jpg');
+    background-size: auto;
+
+}
+
+main {
+    grid-column: 1/9;
+    background-color:  rgba(210, 238, 28, 0.5);
+}
+
+section {
+    position: fixed;
+    bottom:0;
+    right: 0;
+    background-color: rgba(255, 127, 80, 0.9);
+    
+
+}
+
+.menu-page {
+    text-align: center;
+}
+
+body {
+    background-color: black;
+}
+
+
+.home>img {
+    width: 100%;
+    height: fit-content;
+}
+
+.home {
+    position: relative;
+}
+
+.btn {
+    position: absolute;
+    top: 550px;
+    left: 50px;
+    z-index: 1;
+}
+
+.btn-login {
+    padding: 20px 30px;
+    margin-right: 30px;
+    background-color: slategray;
+    font-size: larger;
+}
+
+.btn-signup {
+    padding: 20px 20px;
+    background-color: rgba(255, 127, 80, 0.7);
+    font-size: larger;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+.pay-submit{
+    padding: 10px 30px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+    font-size: larger;
+    background-color: rgba(0, 0, 0, 30);
+    color: white;
+    cursor: pointer;
+}
+
+.add{
+    border-radius: 10px;
+    font-size: larger;
+    font-weight: bold;
+}
+
+
+.profile>div>input{
+    width: fit-content;
+    margin-bottom: 10px;
+}
+.profile>button{
+    width: fit-content;
+}
+.main_back{
+    width: 100%;
+}
+.food-items{
+    font-style: italic;
+    font-size: 1.5rem;
+}
+.food-order{
+   
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    background-color: rgba(255, 166, 0, 0.512);
+   
+}
+.summary-body{
+    background-image: url('/images3.jpg');
+    background-size: contain;
+    margin: 1px 1px;
+    padding: 0px 0px;
+    font-size: 1.5rem;
+    overflow: hidden;
+}
+.summary-title{
+    text-align: center;
+    background-color: rgba(255, 255, 0, 0.601);
+    font-size: 1.5rem;
+    margin-top: 0px;
+}
+.summary-price{
+    padding: 10px 10px;
+    text-align: center;
+    background-color: rgba(255, 127, 80, 0.8);
+}
+
+.btn-update-delete{
+    margin-right: 25px;
+}
+.update{
+    background-color: green;
+    color: white;
+    cursor: pointer;
+    padding: 20px 20px;
+    margin-bottom: 5px;
+    border-radius: 20px;
+    font-weight: bolder;
+    font-size: large;
+
+}
+.delete{
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    padding: 20px 20px;
+    border-radius: 20px;
+    font-weight: bolder;
+    font-size: large;
+
+}
+.history-image{
+    width: 200px;
+    height: fit-content;
+}
+.history-main{
+    background-image: url('/waste.png');
+    background-size: contain;
+   
+}
+.history_items{
+    background-color: rgba(153, 205, 50, 0.6);
+    width: fit-content;
+    text-align: center;
+}
+.history-main>h1{
+    text-align: center;
+    background-color: rgba(255, 127, 80, 0.904);
+    padding:20px 20px;
+    margin-bottom: 15px;
+}
+.history-main-1{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(100px,4fr));
+    grid-gap: 10px;
+}
+.profile_body{
+    background-image: url('/images3.jpg');
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
+}
+.profile{
+    background-color: rgba(0, 0, 0, 0.81);
+    width: fit-content;
+    padding: 50px 50px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+.save{
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: larger;
+    background-color: slategray;
+    cursor: pointer;
+}
+footer{
+    margin-top: auto;
+    color: white;
+}
+.login{
+    display: flex;
+    flex-direction: column;
+    color: white;
+    margin-right: auto;
+    margin-left: auto;
+    width: fit-content;
+    justify-content: space-around;
+}
+.login_bi{
+    background-image: url('/login.jpg');
+    background-size: cover;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+   justify-content: center;
+   align-items: center;    
+}
+.login>input{
+    margin-bottom: 20px;
+}
+.login>h3{
+    margin-bottom: 20px;
+}
+.incorrect{
+    background-image: url('/incorrect.jpg');
+    background-size: cover;
+    width: 100%;
+    height: 100vh;
+}
+.thank{
+    background-image: url('/thank_you.png');
+    background-size: cover;
+    width: 100%;
+    height: 100vh;
+}
+header{
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    padding: 10px 10px;
+}
+.nav_right{
+    display: flex;
+    margin-left: auto;
+    color: white;
+}
+.nav_right>a{
+    padding: 10px 10px;
+    color: white;
+}

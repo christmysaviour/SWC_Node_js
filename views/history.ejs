@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+    <title>History</title>
+    <link rel="stylesheet" href="/styles.css">  
+</head>
+<body>
+    
+    <div class="history-main">
+        <h1>Order History</h1>
+        <div class="history-main-1">
+            <%history.forEach((items)=>{%>
+                <div class="history_items">
+                 <img  class="food-image" src="<%=items.image%>"/>
+                 <h3>Name : <%=items.name%></h3>
+                 <h3>Quantity : <%=items.quantity%></h3>
+                 <h3>Price/Item $:<%=items.price%></h3>
+                 <h3>Total Price $: <%=items.quantity*items.price%></h3>
+                </div>
+             <%})%>
+        </div>
+    </div>
+</body>
+</html>
