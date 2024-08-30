@@ -191,7 +191,6 @@ app.get('/order-history', verifyToken, async (req, res) => {
         ...groupedOrders[sessionId]
     }));
 
-    console.log(history);
     res.render('history', { history });
 });
 
@@ -205,7 +204,6 @@ app.post('/profile', verifyToken, (req, res) => {
     const userId = req.userId;
     const { password, new_password } = req.body;
     const token = jwt.sign({ userId }, 'abc123');
-    console.log(token);
 
     if (password === new_password) {
         User.findOneAndUpdate(
