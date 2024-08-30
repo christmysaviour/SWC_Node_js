@@ -52,8 +52,8 @@
                 <% cartItems.forEach(item => { %>
                 <li>
                     <span><%= item.name %> - Quantity: <%= item.quantity %></span>
-                    <span class="price">Total Price: $<%= item.totalPrice.toFixed(2) %></span>
-                    <% total += item.totalPrice %>
+                    <span class="price">Total Price: $<%= item.quantity*item.price.toFixed(2) %></span>
+                    <% total += (item.quantity*item.price) %>
                 </li>
                 <% }); %>
             </ul>
@@ -102,23 +102,25 @@
                 });
             });
 
+            
             function updateCartSummary(cartItems) {
-                const cartItemsList = document.getElementById('cart-items-list');
-                cartItemsList.innerHTML = ''; 
+    const cartItemsList = document.getElementById('cart-items-list');
+    cartItemsList.innerHTML = ''; 
 
-                let total = 0;
-                cartItems.forEach(item => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${item.name} - Quantity: ${item.quantity}</span>
-                        <span class="price">Total Price: $${item.totalPrice.toFixed(2)}</span>
-                    `;
-                    cartItemsList.appendChild(li);
-                    total += item.totalPrice;
-                });
+    let total = 0;
+    cartItems.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${item.name} - Quantity: ${item.quantity}</span>
+            <span class="price">Total Price: $${(item.quantity * item.price).toFixed(2)}</span>
+        `;
+        cartItemsList.appendChild(li);
+        total += item.quantity * item.price;
+    });
 
-                document.querySelector('#cart-summary h2').textContent = `Total Amount: $${total.toFixed(2)}`;
-            }
+    document.querySelector('#cart-summary h2').textContent = `Total Amount: $${total.toFixed(2)}`;
+}
+
         });
     </script>
 </body>

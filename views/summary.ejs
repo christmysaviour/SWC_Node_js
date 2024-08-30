@@ -1,89 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css"> 
     <style>
-      header {
+      header{
         background-color: #ff5722;
       }
-      body {
+      body{
         background-color: aliceblue;
       }
-      .summary-body {
-        padding: 20px;
-      }
-      .food-order {
-        margin-bottom: 20px;
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 10px;
-      }
-      .food-image {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-      }
-      .btn-update-delete {
-        margin-top: 10px;
-      }
-    </style>
+    </style>  
 </head>
+<header>
+  <div class="title">
+      <a href="/main"><h1>Traditional American Cuisine</h1></a>
+  </div>
+  <div class="nav_right">
+      <a href="/order-history">Order History</a>
+      <a href="/profile">Profile</a>
+      <a href="/logout">Sign Out</a>
+  </div>
+</header>
 <body>
-    <header>
-      <div class="title">
-          <a href="/main"><h1>Traditional American Cuisine</h1></a>
-      </div>
-      <div class="nav_right">
-          <a href="/order-history">Order History</a>
-          <a href="/profile">Profile</a>
-          <a href="/logout">Sign Out</a>
-      </div>
-    </header>
-
-    <div class="summary-body">
-        <div class="summary-title">
-            <h1>Order Cart Summary</h1>
-        </div>
-
-        <% if (data.items.length === 0) { %>
-            <p>Your cart is empty.</p>
-        <% } else { %>
-            <% data.items.forEach(item => { %>
-                <div class="food-order">
-                    <img class="food-image" src="<%= item.image %>" alt="<%= item.name %>">
-                    <div>
-                        <h3><%= item.name %></h3>
-                        <p>Price/item: $<%= item.price.toFixed(2) %></p>
-                        <form action="/update-quantity/<%= item._id %>?orderId=<%= token_id %>" method="POST">
-                            <label for="quantity-<%= item._id %>">Quantity:</label>
-                            <input type="number" id="quantity-<%= item._id %>" name="quantity" value="<%= item.quantity %>" min="1" required>
-                            <button type="submit" class="update">Update</button>
-                        </form>
-                        <form action="/delete-item/<%= item._id %>?orderId=<%= token_id %>" method="POST">
-                            <button type="submit" class="delete">Delete</button>
-                        </form>
-                    </div>
-                </div>
-            <% }); %>
-
-            <% let totalprice = 0; %>
-            <% data.items.forEach(item => { %>
-                <% totalprice += item.price * item.quantity; %>
-            <% }); %>
-            
-            <div class="summary-price">
-                <h3>Total Price: $<%= totalprice.toFixed(2) %></h3>
-                <form method="get" action="/thankyou">
-                    <button type="submit" class="pay-submit">Pay</button>
-                </form>
-            </div>
-        <% } %>
+  <div class="summary-body">
+    <div class="summary-title">
+      <h1>Order Cart Summary</h1>
     </div>
+    <% for(let i = 0; i < data.items.length; i++) { %>
+      <div class="food-order">
+        <img class="food-image" src="<%= data.items[i].image %>" alt="<%= data.items[i].name %>" >
+        <div>
+          <h3><%= data.items[i].name %></h3>
+          <p>Price/item: <%= data.items[i].price %></p>
+          <form action="/update-quantity/<%= data.items[i]._id %>?orderId=<%=token_id%>" method="POST">
+          <label for="quantity-<%= data.items[i]._id %>">Quantity:</label>
+          <input type="number" id="quantity-<%= data.items[i]._id %>" name="quantity" value="<%= data.items[i].quantity.toFixed(2) %>">
+        </div>
+        <div class="btn-update-delete">
+          <button type="submit" class="update">Update</button>
+        </form>
+          <form action="/delete-item/<%= data.items[i]._id %>?orderId=<%=token_id%>" method="POST">
+            <button type="submit" class="delete">Delete</button>
+          </form>
+        </div>
+      </div>
+    <% } %>
+    
+    <% var totalprice = 0 %>
+    <% for(let i = 0; i < data.items.length ; i++) { %>
+      <%totalprice = totalprice+data.items[i].price*data.items[i].quantity %>
+  <%}%>
+  <div class="summary-price">
+    <h3>Total Price $: <%=totalprice.toFixed(2)%></h3>
+    <form method="get" action="/thankyou">
+      <button type="submit" class="pay-submit">Pay</button>
+    </form>
+  </div>
+  </div>
+  <footer>
+    <p>&copy; 2023 Traditional American Cuisine. All rights reserved.</p>
+</footer>
+ 
+</body>       
 
-    <footer>
-        <p>&copy; 2023 Traditional American Cuisine. All rights reserved.</p>
-    </footer>
-</body>
 </html>

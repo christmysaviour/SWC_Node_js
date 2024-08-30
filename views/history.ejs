@@ -11,16 +11,16 @@
             padding: 0;
             box-sizing: border-box;
         }
-        header{
+        header {
             background-color: #ff5722;
         }
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f7f7f7; /* Global background color */
+            background-color: #f7f7f7;
             color: #333;
         }
         .history-main {
-            background-color: #ffffff; /* Page-specific background color */
+            background-color: #ffffff;
             background-image: url('/waste.png');
             background-size: cover;
             padding: 20px;
@@ -111,19 +111,23 @@
         <h1>Order History</h1>
         <% history.forEach(order => { %>
             <% if (order.items.length > 0) { %> 
+                <% let orderTotal = 0; %>
                 <div class="order-session">
                     <h2>Order Date: <%= new Date(order.date).toLocaleDateString() %></h2>
                     <div class="order-items">
                         <% order.items.forEach(item => { %>
+                            <% let itemTotal = Number(item.quantity) * Number(item.price); %>
+                            <% orderTotal += itemTotal; %>
                             <div class="history-item">
                                 <img class="food-image" src="<%= item.image %>" alt="<%= item.name %> image"/>
                                 <h3>Name: <%= item.name %></h3>
                                 <h3>Quantity: <%= item.quantity %></h3>
                                 <h3>Price/Item: $<%= item.price %></h3>
-                                <h3>Total Price: $<%= item.totalPrice %></h3>
+                                <h3>Total Price: $<%= itemTotal.toFixed(2) %></h3>
                             </div>
                         <% }) %>
                     </div>
+                    <h3>Order Total: $<%= orderTotal.toFixed(2) %></h3>
                 </div>
             <% } %>
         <% }) %>

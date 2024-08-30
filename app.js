@@ -113,6 +113,7 @@ app.get('/main', verifyToken, (req, res) => {
     });
 });
 
+
 app.get('/home', (req, res) => {
     res.status(201).render('home');
 });
@@ -224,24 +225,50 @@ app.post('/profile', verifyToken, (req, res) => {
     }
 });
 
-app.post('/update-quantity/:itemId', verifyToken, (req, res) => {
-    const orderId = req.query.orderId;
+// app.post('/update-quantity/:itemId', verifyToken, (req, res) => {
+//     const orderId = req.query.orderId;
+//     const { itemId } = req.params;
+//     const { quantity } = req.body;
+
+//     Order.findOneAndUpdate(
+//         { 'items._id': itemId },
+//         { $set: { 'items.$.quantity': quantity } },
+//         { new: true }
+//     )
+//     .then(order => {
+//         req.session.cart = order.items; 
+//         res.redirect('/summary?orderId=' + orderId);
+//     })
+//     .catch(err => {
+//         console.error('Error updating quantity', err);
+//         res.status(500).send('Error updating quantity');
+//     });
+// });
+app.post('/update-quantity/:itemId', verifyToken, async (req, res) => {
     const { itemId } = req.params;
     const { quantity } = req.body;
 
-    Order.findOneAndUpdate(
-        { 'items._id': itemId },
-        { $set: { 'items.$.quantity': quantity } },
-        { new: true }
-    )
-        .then(order => {
-            res.redirect('/summary?orderId=' + orderId);
-        })
-        .catch(err => {
-            console.error('Error updating quantity', err);
-            res.status(500).send('Error updating quantity');
-        });
+    try {
+        // Update the quantity in the database
+        const order = await Order.findOneAndUpdate(
+            { 'items._id': itemId },
+            { $set: { 'items.$.quantity': quantity } },
+            { new: true }
+        );
+
+        if (order) {
+            // Update the session cart to reflect the changes
+            req.session.cart = order.items;
+            res.redirect('/summary?orderId=' + order._id);
+        } else {
+            res.status(404).send('Item not found');
+        }
+    } catch (err) {
+        console.error('Error updating quantity', err);
+        res.status(500).send('Error updating quantity');
+    }
 });
+
 
 app.post('/delete-item/:itemId', verifyToken, (req, res) => {
     const { itemId } = req.params;
@@ -252,14 +279,16 @@ app.post('/delete-item/:itemId', verifyToken, (req, res) => {
         { $pull: { items: { _id: itemId } } },
         { new: true }
     )
-        .then(order => {
-            res.redirect('/summary?orderId=' + orderId);
-        })
-        .catch(err => {
-            console.error('Error deleting item', err);
-            res.status(500).send('Error deleting item');
-        });
+    .then(order => {
+        req.session.cart = order.items; // Sync session cart with updated order
+        res.redirect('/summary?orderId=' + orderId);
+    })
+    .catch(err => {
+        console.error('Error deleting item', err);
+        res.status(500).send('Error deleting item');
+    });
 });
+
 
 app.get('/logout', (req, res) => {
     res.clearCookie('token');
