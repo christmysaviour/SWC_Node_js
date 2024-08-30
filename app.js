@@ -8,20 +8,35 @@ const Order = require('./model/Order');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const session = require('express-session'); 
 const foodItems = require('./data');
 require('dotenv').config();
 
-app.use(cookieParser());
+
 const dbURI = process.env.DB_URI;
 const port = process.env.PORT || 4000;
+const sessionSecret = process.env.SESSION_SECRET;
+const jwtSecret = process.env.JWT_SECRET;
+
+
+
+app.use(cookieParser());
+
+app.use(session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } 
+}));
+
 
 const verifyToken = (req, res, next) => {
     const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
-            return res.redirect('/home');
+        return res.redirect('/home');
     }
 
-    jwt.verify(token, 'abc123', (err, decoded) => {
+    jwt.verify(token, jwtSecret, (err, decoded) => {
         if (err) {
             if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
                 return res.status(401).json({ message: 'Invalid token' });
@@ -33,10 +48,6 @@ const verifyToken = (req, res, next) => {
         next();
     });
 };
-
-
-
-
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -55,21 +66,25 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-let cartItems = [];
-
 app.get('/', (req, res) => {
     res.status(201).redirect('/home');
 });
 
+
 app.post('/add-to-cart', verifyToken, (req, res) => {
     const { name, price, image } = req.body;
-    const existingItem = cartItems.find((item) => item.name === name);
+
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
+
+    const existingItem = req.session.cart.find((item) => item.name === name);
 
     if (existingItem) {
         existingItem.quantity++;
         existingItem.totalPrice = existingItem.quantity * parseFloat(existingItem.price);
     } else {
-        cartItems.push({
+        req.session.cart.push({
             image,
             name,
             price: parseFloat(price.substring(1)),
@@ -78,9 +93,8 @@ app.post('/add-to-cart', verifyToken, (req, res) => {
         });
     }
 
-    res.json({ success: true, cartItems: cartItems });
+    res.json({ success: true, cartItems: req.session.cart });
 });
-
 
 app.get('/login', (req, res) => {
     res.status(201).render('login');
@@ -94,7 +108,7 @@ app.get('/main', verifyToken, (req, res) => {
     const token = req.cookies.token;
     res.render('main', {
         foodItems: foodItems,
-        cartItems: cartItems,
+        cartItems: req.session.cart || [],
         token: token
     });
 });
@@ -104,21 +118,20 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/thankyou', (req, res) => {
-    cartItems.length = 0;
+    req.session.cart = []; // Clear cart
     res.status(201).render('thankyou');
 });
 
-const { v4: uuidv4 } = require('uuid'); // Import UUID
+const { v4: uuidv4 } = require('uuid');
 
 app.post('/summary', verifyToken, async (req, res) => {
     const userId = req.userId;
-    const copiedCartItems = JSON.parse(req.body.cartItems);
+    const copiedCartItems = req.session.cart || [];
 
-    // Create a new order with a unique sessionId
     const newOrder = new Order({
         userId,
         items: copiedCartItems,
-        sessionId: uuidv4(), // Generate a new sessionId
+        sessionId: uuidv4(),
         date: new Date()
     });
 
@@ -128,13 +141,15 @@ app.post('/summary', verifyToken, async (req, res) => {
 
 
 
+
 app.get('/summary', verifyToken, (req, res) => {
     const token_id = req.query.orderId;
     Order.findById({ _id: token_id }).then((data) =>
-    res.status(201).render('summary', { token_id, data })
+        res.status(201).render('summary', { token_id, data })
     )
         .catch(err => console.log(err));
 });
+
 
 app.post('/signup', (req, res) => {
     const { username, password, email } = req.body;
@@ -156,8 +171,7 @@ app.post('/login', (req, res) => {
               res.status(401).render('incorrect');
           } else {
               if (password === user.password) {
-                  const token = jwt.sign({ userId: user._id }, 'abc123');
-                  // Set the token as a cookie
+                  const token = jwt.sign({ userId: user._id }, jwtSecret);
                   res.cookie('token', token, { httpOnly: true });
                   res.redirect('/main');
               } else {
@@ -169,7 +183,6 @@ app.post('/login', (req, res) => {
           res.status(500).json({ message: 'Internal Server Error' });
       });
 });
-
 
 app.get('/order-history', verifyToken, async (req, res) => {
     const orders = await Order.find({ userId: req.userId }).sort({ date: -1 });
@@ -185,7 +198,6 @@ app.get('/order-history', verifyToken, async (req, res) => {
         return acc;
     }, {});
 
-    // Convert to array for rendering
     const history = Object.keys(groupedOrders).map(sessionId => ({
         sessionId,
         ...groupedOrders[sessionId]
@@ -193,7 +205,6 @@ app.get('/order-history', verifyToken, async (req, res) => {
 
     res.render('history', { history });
 });
-
 
 app.get('/profile', verifyToken, (req, res) => {
     const userId = req.userId;
@@ -203,14 +214,13 @@ app.get('/profile', verifyToken, (req, res) => {
 app.post('/profile', verifyToken, (req, res) => {
     const userId = req.userId;
     const { password, new_password } = req.body;
-    const token = jwt.sign({ userId }, 'abc123');
 
     if (password === new_password) {
         User.findOneAndUpdate(
             { _id: userId },
             { $set: { 'password': password } },
             { new: true }
-        ).then(data => res.redirect('/main')).catch(err => console.log(err));
+        ).then(() => res.redirect('/main')).catch(err => console.log(err));
     }
 });
 
@@ -233,10 +243,6 @@ app.post('/update-quantity/:itemId', verifyToken, (req, res) => {
         });
 });
 
-app.get('/check-auth', verifyToken, (req, res) => {
-    res.status(200).json({ message: 'Authenticated' });
-});
-
 app.post('/delete-item/:itemId', verifyToken, (req, res) => {
     const { itemId } = req.params;
     const orderId = req.query.orderId;
@@ -257,5 +263,6 @@ app.post('/delete-item/:itemId', verifyToken, (req, res) => {
 
 app.get('/logout', (req, res) => {
     res.clearCookie('token');
+    req.session.cart = []; // Clear cart on logout
     res.status(200).redirect('/home');
 });
