@@ -9,11 +9,11 @@
 <body>
     <header>
         <div class="title">
-        <h1>Traditional American Cuisine</h1>
+            <a href="/main"><h1>Traditional American Cuisine</h1></a>
         </div>
         <div class="nav_right">
-            <a href="/order-history?token=<%=token%>">Order History</a>
-            <a href = "/profile?token=<%=token%>">Profile</a>
+            <a href="/order-history">Order History</a>
+            <a href="/profile">Profile</a>
             <a href="/logout">Sign Out</a>
         </div>
     </header>
@@ -22,43 +22,104 @@
     </div>
     <div class="body">
         <main>
-            <h2 class="menu-page">Menu Page</h2>
-            <ul>
-                <% foodItems.forEach(item => { %>
-                <div class="items">
-                    <img  class="food-image" src="<%=item.image%>" />
-                    <span class="food-items"><h3><%= item.name %></h3><h3><%= item.price %></h3></span>
-                    <form action="/add-to-cart?token=<%=token%>" method="POST">
-                        <input type="hidden" name="image" value ="<%=item.image%>">
-                        <input type="hidden" name="name" value="<%= item.name %>">
-                        <input type="hidden" name="price" value="<%= item.price %>">
-                        <button type="submit" class="add">Add to Cart</button>
-                    </form>
+            <div class="menu-page">
+                <h1>Menu</h1>
+                <div class="menu-scroll-container">
+                    <div class="menu-items">
+                        <% foodItems.forEach(item => { %>
+                        <div class="item">
+                            <img class="food-image" src="<%= item.image %>" alt="<%= item.name %>">
+                            <div class="food-info">
+                                <h3 class="food-name"><%= item.name %></h3>
+                                <h3 class="food-price"><%= item.price %></h3>
+                            </div>
+                            <form class="add-to-cart-form" data-item-id="<%= item._id %>">
+                                <input type="hidden" name="image" value="<%= item.image %>">
+                                <input type="hidden" name="name" value="<%= item.name %>">
+                                <input type="hidden" name="price" value="<%= item.price %>">
+                                <button type="submit" class="add-to-cart-button">Add to Cart</button>
+                            </form>
+                        </div>
+                        <% }); %>
+                    </div>
                 </div>
-                <% }); %>
-            </ul>
+            </div>
         </main>
         <section id="cart-summary">
             <h3>Cart Summary</h3>
-            <ul>
-                <% let total = 0%>
+            <ul id="cart-items-list">
+                <% let total = 0 %>
                 <% cartItems.forEach(item => { %>
                 <li>
                     <span><%= item.name %> - Quantity: <%= item.quantity %></span>
-                    <span class="'price">Total Price: $<%= item.totalPrice.toFixed(2) %></span>
-                    <% total+= item.totalPrice%>
+                    <span class="price">Total Price: $<%= item.totalPrice.toFixed(2) %></span>
+                    <% total += item.totalPrice %>
                 </li>
                 <% }); %>
             </ul>
-            <h2>Total Amount: $<%=total.toFixed(2)%></h2>
-            <form action="/summary?token=<%=token%>" method="post">
+            <h2>Total Amount: $<%= total.toFixed(2) %></h2>
+            <form action="/summary" method="post">
                 <input type="hidden" name="cartItems" value="<%= JSON.stringify(cartItems) %>">
-                <button type="submit" class="pay-submit">Pay</button>
+                <button type="submit" class="pay-submit">View Items In Cart</button>
             </form>
         </section>
     </div>
     <footer>
         <p>&copy; 2023 Traditional American Cuisine. All rights reserved.</p>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = '<%= token %>';
+            if (!token) {
+                window.location.href = '/home';
+            }
+
+            const forms = document.querySelectorAll('.add-to-cart-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); 
+
+                    const formData = new FormData(form);
+                    const itemId = form.getAttribute('data-item-id');
+
+                    fetch('/add-to-cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Authorization': `Bearer ${token}` // Include the token in the header
+                        },
+                        body: new URLSearchParams(formData).toString()
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateCartSummary(data.cartItems);
+                        } else {
+                            console.error('Failed to add item to cart');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+
+            function updateCartSummary(cartItems) {
+                const cartItemsList = document.getElementById('cart-items-list');
+                cartItemsList.innerHTML = ''; 
+
+                let total = 0;
+                cartItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${item.name} - Quantity: ${item.quantity}</span>
+                        <span class="price">Total Price: $${item.totalPrice.toFixed(2)}</span>
+                    `;
+                    cartItemsList.appendChild(li);
+                    total += item.totalPrice;
+                });
+
+                document.querySelector('#cart-summary h2').textContent = `Total Amount: $${total.toFixed(2)}`;
+            }
+        });
+    </script>
 </body>
 </html>

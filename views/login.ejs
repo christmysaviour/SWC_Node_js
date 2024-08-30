@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <head>
-    <title>Sign Up</title>
+    <title>Sign In</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="login_bi">
-            <form action="/login" method="post" class="login"> 
+        <form action="/login" method="post" class="login">
             <h2>Login</h2>
-            <br>
             <h3>Username: </h3>
-            <input type="text" name="username"/>
+            <input type="text" name="username" required>
             <h3>Password: </h3>
-            <input type="password" name="password">
-            <br>
+            <input type="password" name="password" required>
             <button type="submit" class="save">Login</button>
-            </form>
+        </form>
     </div>
+    <footer>
+        <p>&copy; 2023 Traditional American Cuisine. All rights reserved.</p>
+    </footer>
     
 </body>
 

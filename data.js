@@ -13,7 +13,7 @@ const foodItems =  [
     {
       "name": "Salad",
       "price": "$8.99",
-      "image": "https://example.com/salad.jpg"
+      "image": "https://www.jessicagavin.com/wp-content/uploads/2016/06/summer-fruit-green-salad-with-peach-poppy-seed-dressing-1200.jpg"
     },
     {
       "name": "Sushi",
