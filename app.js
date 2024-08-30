@@ -13,6 +13,7 @@ require('dotenv').config();
 
 app.use(cookieParser());
 const dbURI = process.env.DB_URI;
+const port = process.env.PORT || 4000;
 
 const verifyToken = (req, res, next) => {
     const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
@@ -39,8 +40,8 @@ const verifyToken = (req, res, next) => {
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
-        app.listen(3000, () => {
-            console.log('Server started on port 3000');
+        app.listen(port, () => {
+            console.log(`Server started on port ${port}`);
         });
     })
     .catch((error) => {

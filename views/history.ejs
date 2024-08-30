@@ -107,24 +107,25 @@
             <a href="/logout">Sign Out</a>
         </div>
     </header>
-
     <div class="history-main">
         <h1>Order History</h1>
         <% history.forEach(order => { %>
-            <div class="order-session">
-                <h2>Order Date: <%= new Date(order.date).toLocaleDateString() %></h2>
-                <div class="order-items">
-                    <% order.items.forEach(item => { %>
-                        <div class="history-item">
-                            <img class="food-image" src="<%= item.image %>" alt="<%= item.name %> image"/>
-                            <h3>Name: <%= item.name %></h3>
-                            <h3>Quantity: <%= item.quantity %></h3>
-                            <h3>Price/Item: $<%= item.price %></h3>
-                            <h3>Total Price: $<%= item.totalPrice %></h3>
-                        </div>
-                    <% }) %>
+            <% if (order.items.length > 0) { %> 
+                <div class="order-session">
+                    <h2>Order Date: <%= new Date(order.date).toLocaleDateString() %></h2>
+                    <div class="order-items">
+                        <% order.items.forEach(item => { %>
+                            <div class="history-item">
+                                <img class="food-image" src="<%= item.image %>" alt="<%= item.name %> image"/>
+                                <h3>Name: <%= item.name %></h3>
+                                <h3>Quantity: <%= item.quantity %></h3>
+                                <h3>Price/Item: $<%= item.price %></h3>
+                                <h3>Total Price: $<%= item.totalPrice %></h3>
+                            </div>
+                        <% }) %>
+                    </div>
                 </div>
-            </div>
+            <% } %>
         <% }) %>
     </div>
 
