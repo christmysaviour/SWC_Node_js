@@ -9,10 +9,11 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const foodItems = require('./data');
-app.use(cookieParser());
-const dbURI = "mongodb+srv://abc123:test123@cluster0.p6j9x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+require('dotenv').config();
 
-// Middleware to verify JWT token
+app.use(cookieParser());
+const dbURI = process.env.DB_URI;
+
 const verifyToken = (req, res, next) => {
     const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -22,10 +23,8 @@ const verifyToken = (req, res, next) => {
     jwt.verify(token, 'abc123', (err, decoded) => {
         if (err) {
             if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
-                // For AJAX requests, send a JSON response
                 return res.status(401).json({ message: 'Invalid token' });
             } else {
-                // For regular requests, redirect to login page
                 return res.redirect('/login');
             }
         }
@@ -78,7 +77,6 @@ app.post('/add-to-cart', verifyToken, (req, res) => {
         });
     }
 
-    // Return JSON response with updated cart items
     res.json({ success: true, cartItems: cartItems });
 });
 
