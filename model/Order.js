@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid'); // Import UUID
 
 const orderSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    sessionId: { type: String, default: uuidv4 }, // Add default value
+    sessionId: { type: String, default: uuidv4 }, // Use uuidv4 to generate a default sessionId
     items: [
         { 
             image: String,
@@ -13,7 +13,8 @@ const orderSchema = new mongoose.Schema({
             totalPrice: Number
         }
     ],
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now },
+    status: { type: String, enum: ['pending', 'completed'], default: 'pending' } 
 });
 
 const Order = mongoose.model('Order', orderSchema);
