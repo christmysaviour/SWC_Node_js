@@ -169,6 +169,27 @@ app.get('/home', (req, res) => {
     res.status(201).render('home');
 });
 
+
+app.get('/profile', verifyToken, (req, res) => {
+    const userId = req.userId;
+    User.findOne({ _id: userId }).then(data => res.render('Profile', { data, userId }));
+});
+
+app.post('/profile', verifyToken, (req, res) => {
+    const userId = req.userId;
+    const { password, new_password } = req.body;
+
+    if (password === new_password) {
+        User.findOneAndUpdate(
+            { _id: userId },
+            { $set: { 'password': password } },
+            { new: true }
+        ).then(() => res.redirect('/main')).catch(err => console.log(err));
+    }
+});
+
+
+
 app.get('/thankyou', async (req, res) => {
     try {
         const orderId = req.query.orderId;
@@ -328,7 +349,7 @@ app.get('/logout', (req, res) => {
     res.status(200).redirect('/home');
 });
 
-module.exports = app;
+
 
 
 
